@@ -313,6 +313,7 @@
 				FBEE464D1E5726F500928E2E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
