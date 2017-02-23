@@ -127,8 +127,8 @@ class GameScene: SKScene {
         
         // Time the black should be displayed. Between 0 and 5 seconds.
         self.timeForPress = self.randomSource.nextUniform()*maxPressDisplayTime
-        if self.timeForPress < 1 {
-          self.timeForPress = 1;
+        if self.timeForPress < 0.6 {
+          self.timeForPress = 0.6;
         }
         
         return;
