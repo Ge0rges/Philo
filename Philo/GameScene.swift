@@ -35,7 +35,7 @@ class GameScene: SKScene {
     self.randomSource = GKLinearCongruentialRandomSource.init()
 
     // Generate a random color to press this time
-    self.colorToPress = generateRandomColor();
+    self.colorToPress = UIColor.black;
     self.backgroundColor = self.colorToPress;
     
     self.lastUpdateTime = 0// Initialize
@@ -149,7 +149,7 @@ class GameScene: SKScene {
   }
   
   func randomizeBackgroundColorUntilPressColor() {
-    if self.gamePlaying {
+    if self.gamePlaying && !self.touchValid {
       let timeForColor = self.randomSource.nextUniform()*maxTimePerColor// Generate a first random time
       
       self.backgroundColor = generateRandomColor();
