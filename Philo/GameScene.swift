@@ -22,22 +22,26 @@ class GameScene: SKScene {
   private var gamePlaying : Bool = false// Used to track the state of the game
 
   private var secondsTillPressValid : Float = 0// Stores the seconds till touchValid should bne true, and since it was if < 0
-  private var timeForBlack : Float = 0// Holds the randomly generated value time for black
-  private let maxBlackDisplayTime : Float = 5.0// Max display time for black, in seconds.
-  private let maxTimeForColors : Float = 20.0// Max time the colors should be shown, in seconds.
-  private let maxTimePerColor : Float = 7.0// Max time an individual color should be shown, in seconds.
-  
+  private var timeForPress : Float = 0// Holds the randomly generated value time for the press time
+  private let maxPressDisplayTime : Float = 5.0// Max display time for press color, in seconds.
+  private let maxTimeForColors : Float = 14.0// Max time the colors should be shown, in seconds.
+  private let maxTimePerColor : Float = 3.0// Max time an individual color should be shown, in seconds.
+  private var colorToPress : UIColor!// The color that should be pressed. Will be generateRandomColor().
+
   private var score : Int = 0;
   
   override func sceneDidLoad() {
+    // Initialize the random number source
+    self.randomSource = GKLinearCongruentialRandomSource.init()
+
+    // Generate a random color to press this time
+    self.colorToPress = generateRandomColor();
+    self.backgroundColor = self.colorToPress;
     
     self.lastUpdateTime = 0// Initialize
         
     // Get label node from scene and store it for use later
     self.label = self.childNode(withName: "helloLabel") as? SKLabelNode
-    
-    // Initialize the random number source
-    self.randomSource = GKLinearCongruentialRandomSource.init()
   }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -60,7 +64,7 @@ class GameScene: SKScene {
       self.secondsTillPressValid = self.randomSource.nextUniform()*maxTimeForColors;
       
       // Randomize the background color
-      self.randomizeBackgroundColorUntilBlack()
+      self.randomizeBackgroundColorUntilPressColor()
     }
   }
   
@@ -69,9 +73,10 @@ class GameScene: SKScene {
       // Reset
       self.touchValid = false
       self.secondsTillPressValid = self.randomSource.nextUniform()*maxTimeForColors;
+      self.timeForPress = 0;
       
       // Randomize the background color
-      self.randomizeBackgroundColorUntilBlack()
+      self.randomizeBackgroundColorUntilPressColor()
       
       // Update score
       self.score += 1
@@ -117,20 +122,20 @@ class GameScene: SKScene {
         self.touchValid = true
         self.secondsTillPressValid = 0
         
-        // Black background
-        self.backgroundColor = UIColor.black
+        // Color to press background
+        self.backgroundColor = self.colorToPress;
         
         // Time the black should be displayed. Between 0 and 5 seconds.
-        self.timeForBlack = self.randomSource.nextUniform()*maxBlackDisplayTime
-        if self.timeForBlack < 0.5 {
-          self.timeForBlack = 0.5;
+        self.timeForPress = self.randomSource.nextUniform()*maxPressDisplayTime
+        if self.timeForPress < 1 {
+          self.timeForPress = 1;
         }
         
         return;
       }
       
       // Check if the background is black (touch valid) and the time has run out
-      if (self.secondsTillPressValid <= -self.timeForBlack && self.touchValid) {
+      if (self.secondsTillPressValid <= -self.timeForPress && self.touchValid) {
         
         // Reset
         self.touchValid = false
@@ -143,21 +148,26 @@ class GameScene: SKScene {
     }
   }
   
-  func randomizeBackgroundColorUntilBlack() {
-    if self.backgroundColor != UIColor.black && self.gamePlaying {
+  func randomizeBackgroundColorUntilPressColor() {
+    if self.gamePlaying {
       let timeForColor = self.randomSource.nextUniform()*maxTimePerColor// Generate a first random time
       
-      // Color the background
-      let red = CGFloat(self.randomSource.nextUniform())
-      let green = CGFloat(self.randomSource.nextUniform())
-      let blue = CGFloat(self.randomSource.nextUniform())
-      
-      self.backgroundColor = UIColor.init(red: red, green: green, blue: blue, alpha: 1.0)
+      self.backgroundColor = generateRandomColor();
       
       let dispatchTime = DispatchTime.now() + Double(timeForColor)
       DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
-        self.randomizeBackgroundColorUntilBlack()
+        self.randomizeBackgroundColorUntilPressColor()
       }
     }
+  }
+  
+  func generateRandomColor() -> UIColor {
+    // Color the background
+    let red = CGFloat(self.randomSource.nextUniform())
+    let green = CGFloat(self.randomSource.nextUniform())
+    let blue = CGFloat(self.randomSource.nextUniform())
+    
+    let generatedColor = UIColor.init(red: red, green: green, blue: blue, alpha: 1.0)
+    return  (!generatedColor.isEqual(self.colorToPress)) ? generatedColor : generateRandomColor()
   }
 }
