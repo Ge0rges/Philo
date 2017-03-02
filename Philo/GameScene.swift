@@ -23,9 +23,9 @@ class GameScene: SKScene {
 
   private var secondsTillPressValid : Float = 0// Stores the seconds till touchValid should bne true, and since it was if < 0
   private var timeForPress : Float = 0// Holds the randomly generated value time for the press time
-  private let maxPressDisplayTime : Float = 5.0// Max display time for press color, in seconds.
-  private let maxTimeForColors : Float = 14.0// Max time the colors should be shown, in seconds.
-  private let maxTimePerColor : Float = 3.0// Max time an individual color should be shown, in seconds.
+  private let maxPressDisplayTime : Float = 3.0// Max display time for press color, in seconds.
+  private let maxTimeForColors : Float = 10.0// Max time the colors should be shown, in seconds.
+  private let maxTimePerColor : Float = 2.0// Max time an individual color should be shown, in seconds.
   private var colorToPress : UIColor!// The color that should be pressed. Will be generateRandomColor().
 
   private var score : Int = 0;
